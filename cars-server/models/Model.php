@@ -18,6 +18,10 @@ abstract class Model{
         return $data ? new static($data) : null;
     }
 
+    public static function findAll(mysqli $connection){
+        //implement this
+    }
+
 }
 
 

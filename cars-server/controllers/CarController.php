@@ -21,5 +21,10 @@ function getCarByID(){
 getCarById();
 
 
+//ToDO: 
+//transform getCarByID to getCars()
+//if the id is set? then we retrieve the specific car 
+// if no ID, then we retrieve all the cars
+
 
 ?>
