@@ -3,28 +3,29 @@ include("../models/Car.php");
 include("../connection/connection.php");
 include("../services/ResponseService.php");
 
-function getCarByID(){
+function getCars(){
     global $connection;
-
     if(isset($_GET["id"])){
         $id = $_GET["id"];
+        $car = Car::find($connection, $id);
+        echo ResponseService::response(200, $car->toArray());
     }else{
-        echo ResponseService::response(500, "ID is missing");
+        // retrieve all cars
+        $cars = Car::findAll($connection);
+        $payload = [];
+        foreach($cars as $car){
+            $payload[] = $car->toArray();
+        }
+        echo ResponseService::response(200, $payload);
         return;
     }
 
-    $car = Car::find($connection, $id);
-    echo ResponseService::response(200, $car->toArray());
     return;
 }
 
 //getCarById();
 getCars();
 
-//ToDO: 
-//transform getCarByID to getCars()
-//if the id is set? then we retrieve the specific car 
-// if no ID, then we retrieve all the cars
 
 
 ?>
