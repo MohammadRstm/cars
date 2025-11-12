@@ -30,18 +30,73 @@ abstract class Model{
     }
 
     public static function create(mysqli $connection , $carData){
-        $sql = sprintf("INSERT INTO %s (name,year,color) VALUES(? , ? , ?)" , static::$table);
+
+        // figure out columns & placeholders 
+        $columns = array_keys($carData);
+        $placeHolders = implode(',' , array_fill(0 , count($columns) , '?'));
+        $columnList = implode($columns);
+
+        // figure out column types
+        $types = "";
+        $values = [];
+        foreach($carData as $value){
+            if(is_int($value)){
+                $types .= "i";
+            }elseif (is_double($value) || is_float($value)){
+            $types .= "d";
+            }else{
+                $types .= "s";
+            }
+            $values[] = $value;
+        }
+
+        $sql = sprintf("INSERT INTO %s (%s) VALUES(%s)" ,
+         static::$table,
+         $columnList,
+         $placeHolders
+        );
+
         $query = $connection->prepare($sql);
-        $query->bind_param("sis", $carData["name"] , $carData["year"],$carData["color"]);
+        $query->bind_param($types, ...$values);
         $query->execute();
 
         return $query->insert_id;
     }
 
     public static function update(mysqli $connection , $updatedData, $id){
-        $sql = sprintf("UPDATE %s SET name = ? , year = ? , color = ? WHERE id = ?" , static::$table);
+
+        $columns = array_keys($updatedData);
+        // figure out setters e.g SET name = ? , ....
+        $setters = "";
+        foreach($columns as $attribute){
+            $setters .= $attribute ."=?,";
+        }
+
+        $settersList = substr($setters , 0 , -1);// remove trailing ,
+
+        // figure out column types
+        $types = "";
+        $values = [];
+        foreach($updatedData as $value){
+            if(is_int($value)){
+                $types .= "i";
+            }elseif (is_double($value) || is_float($value)){
+            $types .= "d";
+            }else{
+                $types .= "s";
+            }
+            $values[] = $value;
+        }
+
+        $sql = sprintf("UPDATE %s SET %s WHERE %s = ?" ,
+         static::$table,
+         $settersList,
+         static::$primary_key
+        );
+
         $query = $connection->prepare($sql);
-        $query->bind_param("sisi", $updatedData["name"] , $updatedData["year"],$updatedData["color"] , $id);
+        $query->bind_param($types, ...$values , $id);
+
         if(!$query->execute()){
             return false;
         }else{
@@ -50,7 +105,7 @@ abstract class Model{
     }
 
     public static function delete(mysqli $connection , $id){
-        $sql = sprintf("DELETE FROM %s WHERE id = ?" , static::$table);
+        $sql = sprintf("DELETE FROM %s WHERE %s = ?" , static::$table , static::$primary_key);
         $query = $connection->prepare($sql);
         $query->bind_param("i" , $id);
         if(!$query->execute()){
@@ -59,6 +114,8 @@ abstract class Model{
         return true;
     }
 
+    public function save(){}
+    
 }
 
 
