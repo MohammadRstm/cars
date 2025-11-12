@@ -4,7 +4,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json; charset=UTF-8");
 
-$connection = new mysqli ("localhost", "root","","cars_db");
+$connection = new mysqli ("localhost", "root","","cars_db", 3307);
 
 if ($connection -> connect_error){
     die ("connection error:" . $connection-> connect_error);
