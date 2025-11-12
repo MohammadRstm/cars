@@ -1,5 +1,5 @@
 <?php
-include("Model.php");
+require_once(__DIR__ . "/Model.php");
 
 class Car extends Model {
     private int $id;

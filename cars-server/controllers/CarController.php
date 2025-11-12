@@ -1,7 +1,7 @@
 <?php
-include("../models/Car.php");
-include("../connection/connection.php");
-include("../services/ResponseService.php");
+require_once(__DIR__ . "/../models/Car.php");
+require_once(__DIR__ . "/../connection/connection.php");
+require_once(__DIR__ . "/../services/ResponseService.php");
 
 function getCars(){
     global $connection;
