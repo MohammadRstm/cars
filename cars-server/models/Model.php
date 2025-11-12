@@ -12,9 +12,8 @@ abstract class Model{
         $query = $connection->prepare($sql);
         $query->bind_param("i", $id);
         $query->execute();               
-
-        $data = $query->get_result()->fetch_assoc();
-
+        $result = $query->get_result();
+        $data = $result->fetch_assoc();
         return $data ? new static($data) : null;
     }
 
@@ -22,9 +21,9 @@ abstract class Model{
         $sql = sprintf("SELECT * FROM %s" , static::$table);
         $query = $connection->prepare($sql);
         $query->execute();
-
+        $result = $query->get_result();
         $cars = [];
-        while($row = $query->get_result()->fetch_assoc()){
+        while($row = $result->fetch_assoc()){
             $cars[] = new static($row);
         }
         return $cars;
@@ -39,10 +38,10 @@ abstract class Model{
         return $query->insert_id;
     }
 
-    public static function update(mysqli $connection , $updatedData){
+    public static function update(mysqli $connection , $updatedData, $id){
         $sql = sprintf("UPDATE %s SET name = ? , year = ? , color = ? WHERE id = ?" , static::$table);
         $query = $connection->prepare($sql);
-        $query->bind_param("sisi", $updatedData["name"] , $updatedData["year"],$updatedData["color"],$updatedData["id"]);
+        $query->bind_param("sisi", $updatedData["name"] , $updatedData["year"],$updatedData["color"] , $id);
         if(!$query->execute()){
             return false;
         }else{
