@@ -8,17 +8,22 @@ class CarServices{
     public static function getCars($id = null){
         global $connection;
         if($id){
-            $payload = Car::find($connection, $id)->toArray();id: 
-            if(empty($payload)) $message = "Car doesn't exist";
+            $car = Car::find($connection, $id);
+            if(!$car) throw new Exception("Car doesn't exist");
+            $payload = $car->toArray();
         }else{
             $cars = Car::findAll($connection);
-            $payload = [];
-            foreach($cars as $car){
-                $payload[] = $car->toArray();
+            if(!is_array($cars)){// only one car in db
+                $payload = $cars->toArray();
+            }else{
+                $assocCars = [];
+                foreach($cars as $car){
+                    $assocCars[] = $car->toArray();
+                }
+                if(empty($assocCars)) throw new Exception("No cars found");
+                $payload = $assocCars;
             }
-            if(empty($payload)) $message = "No cars found";
         }
-        if(isset($message)) throw new Exception($message);
         return $payload;
     }
     public static function createCar($carData){
@@ -61,9 +66,9 @@ class CarServices{
             throw new Exception("Car not found");
         }
 
-        $deleted = Car::delete($connection ,  $id);id: 
+        $deleted = Car::delete($connection ,  $id);
         if(!$deleted)
-            throw new Exception("failed to delet car");
+            throw new Exception("failed to delete car");
         else
             return (bool)$deleted;
     }

@@ -20,7 +20,7 @@ class CarController{
     public static function createCar($carData){
         try{
             $inserted_id = CarServices::createCar($carData);
-            echo ResponseService::response(200, $inserted_id);
+            echo ResponseService::response(200, ["inserted_id" => $inserted_id]);
         }catch(Exception $ex){
             echo ResponseService::response(500 , ["error" => "Server error : ". $ex->getMessage()]);
         }
@@ -30,7 +30,7 @@ class CarController{
     public static function updateCar($id , $updatedCarData){
         try{
             $is_Updated = CarServices::updateCar($id , $updatedCarData);
-            echo ResponseService::response(200,$is_Updated);
+            echo ResponseService::response(200,["is_updated" => $is_Updated]);
         }catch(Exception $ex){
             echo ResponseService::response(500 , ["error" => "Server error : ". $ex->getMessage()]);
         }
@@ -39,7 +39,7 @@ class CarController{
     public static function deleteCar($id){
         try{
             $is_deleted = CarServices::deleteCar($id);
-            echo ResponseService::response(200,$is_deleted);
+            echo ResponseService::response(200,["is_deleted" => $is_deleted]);
         }catch(Exception $ex){
             echo ResponseService::response(500 , ["error" => "Server error : ". $ex->getMessage()]);
         }

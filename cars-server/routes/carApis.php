@@ -1,12 +1,14 @@
 <?php
 require_once __DIR__ ."/../controllers/CarController.php";
 require_once __DIR__ . "/../services/ResponseService.php";
-require_once __DIR__. "./../utils/validateCarData.php";
+require_once __DIR__. "/../utils/validateCarData.php";
 
 // can send http responses but only for auth, presmission & data validation
 
 class CarApis{
     public static function get($id = null){
+        if($id !== null && !is_numeric($id))
+            echo ResponseService::response(400,["error" => "Car id in the wrong format"]);
         CarController::getCars($id);
     }
 
@@ -18,17 +20,17 @@ class CarApis{
             if(empty($missing))
                 CarController::createCar($data['carData']);
             else 
-                echo ResponseService::response(401 ,["error" => "Some car attributes are missing " . implode(',',$missing)]);
+                echo ResponseService::response(400 ,["error" => "Some car attributes are missing " . implode(',',$missing)]);
         }else{
-            echo ResponseService::response(401 ,["error" => "No car data provided"]);
+            echo ResponseService::response(400 ,["error" => "No car data provided"]);
         }
     }
 
     public static function update($id){
         $data = json_decode(file_get_contents("php://input"), true);
 
-        if(!isset($id) || empty($id)){
-            echo ResponseService::response(401,["error" => "Car id must be provided to update"]);
+        if($id === null || !is_numeric($id)){
+            echo ResponseService::response(400,["error" => "Car id not provided or in the wrong format"]);
             return;
         }
 
@@ -37,15 +39,15 @@ class CarApis{
             if(empty($missing))
                 CarController::updateCar($id , $data['updatedCarData']);
             else
-                echo ResponseService::response(401 ,["error" => "Some car attributes are missing " . implode(',',$missing)]);
+                echo ResponseService::response(400 ,["error" => "Some car attributes are missing " . implode(',',$missing)]);
         }else{
-            echo ResponseService::response(401 ,["error" => "No car data provided"]);
+            echo ResponseService::response(400 ,["error" => "No car data provided"]);
         }
     }
     
     public static function delete($id){
-        if(!isset($id) || empty($id)){
-            echo ResponseService::response(401,["error" => "Car id must be provided to delete"]);
+        if($id === null || !is_numeric($id)){
+            echo ResponseService::response(400,["error" => "Car id not provided or in the wrong format"]);
             return;
         }
         CarController::deleteCar($id);
