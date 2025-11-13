@@ -32,7 +32,8 @@ class CarServices{
         if($carData['year'] < 0 || $carData['year'] > $current_year)
             throw new Exception("Year Invalid");
 
-        $inserted_id = Car::create($connection , $carData);
+        $newCar = new Car($carData);
+        $inserted_id = $newCar->save($connection);
 
         if(!$inserted_id || $inserted_id < 0)
             throw new Exception("New car failed to get inserted");
@@ -46,12 +47,18 @@ class CarServices{
         if($updatedCarData['year'] < 0 || $updatedCarData['year'] > $current_year)
             throw new Exception("Year Invalid");
 
-        $car = CarServices::getCars($id);
-        if(!$car){
+        $carData = CarServices::getCars($id);
+        if(!$carData){
             throw new Exception("Car not found");
         }
 
-        $updated = Car::update($connection , $updatedCarData , $id);
+        $car = new Car($carData);
+
+        $car->setYear((int)$updatedCarData['year']);
+        $car->setName($updatedCarData['name']);
+        $car->setColor($updatedCarData['color']);
+
+        $updated = $car->save($connection);
 
         if(!$updated)
             throw new Exception("failed to update car");
