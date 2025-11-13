@@ -2,15 +2,15 @@
 require_once(__DIR__ . "/Model.php");
 
 class Car extends Model {
-    private int $id;
-    private string $name;
-    private string $year;
-    private string $color;
+    protected ?int $id = null;
+    protected string $name;
+    protected int $year;
+    protected string $color;
 
     protected static string $table = "cars";
 
     public function __construct(array $data){
-        $this->id = $data["id"];
+        $this->id = isset($data['id']) ? (int)$data['id'] : null;
         $this->name = $data["name"];
         $this->year = $data["year"];
         $this->color = $data["color"];
@@ -31,6 +31,14 @@ class Car extends Model {
     public function setColor(string $color){
         $this->color = $color;
     }
+    public function getYear(){
+        return $this->year;
+    }
+
+    public function setYear(string $year){
+        $this->year = $year;
+    }
+
 
     public function getColor(){
         return $this->color;

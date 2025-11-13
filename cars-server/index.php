@@ -20,6 +20,7 @@ $request = $routSegments[0] ?? '';// get first segment e.g car
 $reqMethod = $routSegments[1] ?? '';// what method to call 
 $params = array_slice($routSegments,2);// rout parameters in an array
 
+
 if(!empty($request) && !empty($reqMethod)){
     if(isset($apis[$request])){
         $controller_name = $apis[$request]['controller'];
@@ -35,29 +36,6 @@ if(!empty($request) && !empty($reqMethod)){
     }
 }
 
-
-// if(class_exists($className) && method_exists($className, $method)){
-//     $className::$method(...$params);// call the api & its method
-// }else{
-//     ResponseService::response(404,["error" => "Rout not found"]);
-// }
-
-// the upper code is much cleaner than this one
-// the below works but I'll have to keep adding else ifs if I add another api breaking the open/close principle
-
-// two issues to fix in the upper code
-// routes with extra segments like this "http://localhost/cars-fullstack/cars-server/car/get/4/ldf/sdfnsdf"
-// will get accepted and routed , in this case "getCars" will be called normally because php methods can accept extra params
-// another issue if user types http://localhost/cars-fullstack/cars-server/car/_constructor" the contructor will be called
-
-// if($routSegments && !empty($routSegments)){
-//     $method = $routSegments[1] ?? null;
-//     if($routSegments[0] === 'car'){
-//         if($method && method_exists(CarApis,$method)) CarApis::$method();
-//     }else if ($routSegments[0] === 'user'){
-//         // user apis
-//     }
-// }
 
 
 

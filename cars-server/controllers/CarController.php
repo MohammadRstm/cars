@@ -10,8 +10,10 @@ require_once __DIR__ . "/../utils/validateCarData.php";
 class CarController{
 
     public static function getCars($id = null){
-        if($id !== null && !is_numeric($id) || $id < 1)
+        if($id != null && (!is_numeric($id) || $id < 1)){
             echo ResponseService::response(400,["error" => "Car id in the wrong format"]);
+            return;
+        }
         try{
             $payload = CarServices::getCars($id);
             echo ResponseService::response(200, $payload);
@@ -42,7 +44,8 @@ class CarController{
         }       
     }
 
-    public static function updateCar($id){
+    public static function updateCar($id = null){
+     
         $data = json_decode(file_get_contents("php://input"), true);
 
         if($id === null || !is_numeric($id) || $id < 1){
@@ -69,7 +72,7 @@ class CarController{
         }
     }
 
-    public static function deleteCar($id){
+    public static function deleteCar($id = null){
         if($id === null || !is_numeric($id) || $id < 1){
             echo ResponseService::response(400,["error" => "Car id not provided or in the wrong format"]);
             return;

@@ -34,7 +34,7 @@ abstract class Model{
         // figure out columns & placeholders 
         $columns = array_keys($carData);
         $placeHolders = implode(',' , array_fill(0 , count($columns) , '?'));
-        $columnList = implode($columns);
+        $columnList = implode(',', $columns);
 
         // figure out column types
         $types = "";
@@ -50,7 +50,7 @@ abstract class Model{
             $values[] = $value;
         }
 
-        $sql = sprintf("INSERT INTO %s (%s) VALUES(%s)" ,
+        $sql = sprintf("INSERT INTO %s(%s) VALUES(%s)" ,
          static::$table,
          $columnList,
          $placeHolders
@@ -63,7 +63,7 @@ abstract class Model{
         return $query->insert_id;
     }
 
-    public static function update(mysqli $connection , $updatedData, $id){
+    public static function update(mysqli $connection , $updatedData , $id){
 
         $columns = array_keys($updatedData);
         // figure out setters e.g SET name = ? , ....
@@ -73,7 +73,7 @@ abstract class Model{
         }
 
         $settersList = substr($setters , 0 , -1);// remove trailing ,
-
+        
         // figure out column types
         $types = "";
         $values = [];
@@ -94,8 +94,11 @@ abstract class Model{
          static::$primary_key
         );
 
+        $values[] = $id;
+        $types .= "i";
+
         $query = $connection->prepare($sql);
-        $query->bind_param($types, ...$values , $id);
+        $query->bind_param($types, ...$values);
 
         if(!$query->execute()){
             return false;
@@ -114,8 +117,21 @@ abstract class Model{
         return true;
     }
 
-    public function save(){}
-    
+    public function save(mysqli $connection){
+        $objectData = get_object_vars($this);
+        $updatedAttr = [];
+        foreach($objectData as $key => $value){
+            if($key === 'id') continue;// skip id
+            $updatedAttr[$key] = $value;
+        }
+        if($this->id !== null || !empty($this->id)){// update (already in db)
+            return static::update($connection , $updatedAttr ,$this->id);
+        }else{// Insert
+            $this->id = static::create($connection , $updatedAttr);
+            return $this->id;
+        }
+    }
+
 }
 
 
